@@ -1,57 +1,63 @@
 #include <iostream>
 #include <string>
-using namespace std;
-    
-class Cachorro{
+#include <vector>
 
-    public:
-    Cachorro(string n, int i, string r, string p) : nome(n), idade(i), raca(r), porte(p) {}
+class Cachorro {
+public:
+    Cachorro(std::string n, int i, std::string r, std::string p)
+        : nome(n), idade(i), raca(r), porte(p) {}
 
-    string setNome(string n ){
-        nome = n;
-        return nome;
-    }
-    int setIdade(int i){
-        idade = i;
-        return idade;
-    }
-    string setRaca(string r){
-        raca = r;
-        return raca;
-    }
-    string setPorte(string p){
-        porte = p;
-        return porte;
+    void exibir() const {
+        std::cout << "Nome: " << nome << "\n"
+                  << "Idade: " << idade << "\n"
+                  << "Raca: " << raca << "\n"
+                  << "Porte: " << porte << std::endl;
     }
 
-    void exibir(){
-        cout << "Nome: " << nome << endl;
-        cout << "Idade: " << idade << endl;
-        cout << "Raça: " << raca << endl;
-        cout << "Porte: " << porte << endl;
-    }
-    private:
-        string nome;
-        int idade;
-        string raca;
-        string porte;
-};
-int main(){
-    
-    
-
-    string nome, raca, porte;
+private:
+    std::string nome;
     int idade;
+    std::string raca;
+    std::string porte;
+};
 
-    getline(cin, nome);
-    cin >> idade;
-    cin.ignore(); 
-    getline(cin, raca);
-    getline(cin, porte);    
-    Cachorro c(nome, idade, raca, porte);
-    c.exibir();
+int main() {
+    std::vector<Cachorro> canil;
+    int quantidade_de_cachorros = 3; 
 
-    (idade > 8) ? cout << ("O Cachorro é adulto\n") : cout << ("Cachorro é filhote\n");
-    
+    std::cout << "CADASTRO DE " << quantidade_de_cachorros << " CACHORROS\n";
+
+    for (int i = 0; i < quantidade_de_cachorros; ++i) {
+        std::cout << "\n--- DADOS DO CACHORRO " << i + 1 << " ---\n";
+
+        std::string nome, raca, porte;
+        int idade;
+
+        std::cout << "Nome: ";
+
+        if (i == 0) {
+             std::cin.ignore(); 
+        }
+        getline(std::cin, nome);
+        
+        std::cout << "Idade: ";
+        std::cin >> idade;
+        std::cin.ignore(); 
+
+        std::cout << "Raca: ";
+        getline(std::cin, raca);
+
+        std::cout << "Porte: ";
+        getline(std::cin, porte);
+
+        canil.emplace_back(nome, idade, raca, porte);
+    }
+
+    std::cout << "\n--- LISTA DE CACHORROS CADASTRADOS ---\n";
+    for (const auto& cachorro : canil) {
+        cachorro.exibir();
+        std::cout << "--------------------\n";
+    }
+
     return 0;
 }
