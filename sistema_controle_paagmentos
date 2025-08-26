@@ -1,0 +1,115 @@
+// Arquivo: main.cpp
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Classe Pagamento
+class Pagamento {
+private:
+    double valorPagamento;
+    string nomeDoFuncionario;
+
+public:
+    Pagamento() : valorPagamento(0.0), nomeDoFuncionario("") {}
+
+    void setValorPagamento(double valor) {
+        valorPagamento = valor;
+    }
+
+    void setNomeDoFuncionario(const string& nome) {
+        nomeDoFuncionario = nome;
+    }
+
+    double getValorPagamento() const {
+        return valorPagamento;
+    }
+
+    string getNomeDoFuncionario() const {
+        return nomeDoFuncionario;
+    }
+};
+
+// Classe ControleDePagamentos
+class ControleDePagamentos {
+private:
+    vector<Pagamento> pagamentos;
+
+public:
+    ControleDePagamentos(int numPagamentos) {
+        pagamentos.resize(numPagamentos);
+    }
+
+    void setPagamento(const Pagamento& p, int i) {
+        if (i >= 0 && i < (int)pagamentos.size()) {
+            pagamentos[i] = p;
+        }
+    }
+
+    Pagamento getPagamento(int i) const {
+        return pagamentos[i];
+    }
+
+    // Busca por nome (aceita parte do nome)
+    int getIndexFuncionario(const string& nome) const {
+        for (int i = 0; i < (int)pagamentos.size(); i++) {
+            if (pagamentos[i].getNomeDoFuncionario().find(nome) != string::npos) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    double calculaTotalDePagamentos() const {
+        double total = 0.0;
+        for (const auto& p : pagamentos) {
+            total += p.getValorPagamento();
+        }
+        return total;
+    }
+};
+
+// Função principal
+int main() {
+    int numPagamentos;
+    cin >> numPagamentos;
+
+    ControleDePagamentos controle(numPagamentos);
+
+    for (int i = 0; i < numPagamentos; i++) {
+        double valor;
+        string nome;
+
+        cin >> valor;
+        cin.ignore(); // descarta a quebra de linha após o número
+        getline(cin, nome);
+
+        Pagamento p;
+        p.setValorPagamento(valor);
+        p.setNomeDoFuncionario(nome);
+
+        controle.setPagamento(p, i);
+    }
+
+    string nomeBusca;
+    getline(cin, nomeBusca);
+
+    int indice = controle.getIndexFuncionario(nomeBusca);
+
+    if (indice != -1) {
+        Pagamento funcEncontrado = controle.getPagamento(indice);
+        cout << funcEncontrado.getNomeDoFuncionario()
+             << ": R$ " << fixed << setprecision(0)
+             << funcEncontrado.getValorPagamento() << endl;
+
+        cout << "Total: R$ " << fixed << setprecision(0)
+             << controle.calculaTotalDePagamentos() << endl;
+    } else {
+        cout << nomeBusca << " não encontrado(a)." << endl;
+          cout << "Total: R$ " << fixed << setprecision(0)
+             << controle.calculaTotalDePagamentos() << endl;
+    }
+
+    return 0;
+}

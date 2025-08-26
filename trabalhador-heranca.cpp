@@ -91,11 +91,3 @@ int main() {
         cout << t->getNome() << " - Semanal: R$ " << semanal
              << " - Mensal: R$ " << t->getSalario() << endl;
     }
-
-    // Limpar memória
-    for (Trabalhador* t : trabalhadores) {
-        delete t;
-    }
-
-    return 0;
-}
