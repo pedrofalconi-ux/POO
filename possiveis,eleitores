@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <stdexcept> // underflow_error e overflow_error
+
+using namespace std;
+
+// Classe Eleitor
+class Eleitor {
+private:
+    string nome;
+    int idade;
+    string titulo;
+public:
+    Eleitor(string n, int i, string t) : nome(n), idade(i), titulo(t) {}
+
+    string getNome() const { return nome; }
+    int getIdade() const { return idade; }
+};
+
+// Classe GerenciadorEleitores
+class GerenciadorEleitores {
+private:
+    vector<Eleitor> lista;
+
+    void verificaMenoridade(Eleitor *el) {
+        if (el->getIdade() < 16) {
+            throw underflow_error("Eleitor " + el->getNome() + " não pode ser cadastrado");
+        }
+    }
+
+    void verificaPendenciaIdade(Eleitor *el) {
+        if (el->getIdade() > 20) {
+            throw overflow_error("Eleitor " + el->getNome() + " com pendência");
+        }
+    }
+
+public:
+    void cadastrarEleitor(string nome, int idade, string titulo) {
+        lista.emplace_back(nome, idade, titulo);
+    }
+
+    void verificaEleitores() {
+        for (auto &el : lista) {
+            try {
+                verificaMenoridade(&el);
+                verificaPendenciaIdade(&el);
+            } catch (const underflow_error &e) {
+                cout << e.what() << endl;
+            } catch (const overflow_error &e) {
+                cout << e.what() << endl;
+            }
+        }
+    }
+};
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    cin >> N;
+
+    GerenciadorEleitores ger;
+
+    for (int i = 0; i < N; i++) {
+        string nome;
+        int idade;
+        string titulo;
+
+        // leitura do nome completo (com espaços)
+        cin.ignore();
+        getline(cin, nome);
+        cin >> idade >> titulo;
+
+        ger.cadastrarEleitor(nome, idade, titulo);
+    }
+
+    ger.verificaEleitores();
+
+    return 0;
+}

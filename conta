@@ -1,0 +1,162 @@
+#include <iostream>
+#include <string>
+#include <iomanip> // Para manipulação da saída, como std::fixed e std::setprecision
+
+// -------------------- Classe 100% Abstrata (Interface) --------------------
+class IConta {
+public:
+    // Destrutor virtual para garantir que os destrutores das classes derivadas sejam chamados corretamente.
+    virtual ~IConta() {}
+
+    // Métodos virtuais puros (abstratos) que devem ser implementados pelas classes filhas.
+    virtual float saldoTotalDisponivel() = 0;
+    virtual void sacar(float valor) = 0;
+    virtual void depositar(float valor) = 0;
+};
+
+// -------------------- Classe Conta (Classe Base Concreta) --------------------
+class Conta : public IConta {
+protected:
+    // Atributos protegidos, acessíveis por esta classe e suas classes filhas.
+    std::string nomeCliente;
+    int numeroConta;
+    double salarioMensal;
+    double saldo;
+    double limite;
+
+public:
+    // Construtor da classe Conta
+    Conta(std::string nomeCliente, int numeroConta, double salarioMensal) {
+        this->nomeCliente = nomeCliente;
+        this->numeroConta = numeroConta;
+        this->salarioMensal = salarioMensal;
+        this->saldo = 0; // Saldo inicial é sempre zerado.
+        definirLimite(); // Chama o método para definir o limite inicial.
+    }
+
+    // --- Implementação dos métodos da interface IConta ---
+
+    // Retorna o saldo total, que é o saldo em conta mais o limite de crédito.
+    float saldoTotalDisponivel() override {
+        return saldo + limite;
+    }
+
+    // Saca um valor se houver saldo disponível (saldo + limite).
+    void sacar(float valor) override {
+        if (valor <= saldoTotalDisponivel()) {
+            saldo -= valor;
+        }
+    }
+
+    // Adiciona um valor ao saldo da conta.
+    void depositar(float valor) override {
+        saldo += valor;
+    }
+
+    // --- Métodos específicos da classe Conta ---
+
+    // Método virtual que define o limite como 2x o salário mensal.
+    // Pode ser sobrescrito por classes filhas.
+    virtual void definirLimite() {
+        limite = salarioMensal * 2;
+    }
+    
+    // --- Métodos Get e Set (Acesso e Modificação) ---
+
+    void setNomeCliente(std::string nomeCliente) { this->nomeCliente = nomeCliente; }
+    std::string getNomeCliente() { return nomeCliente; }
+
+    void setNumeroConta(int numeroConta) { this->numeroConta = numeroConta; }
+    int getNumeroConta() { return numeroConta; }
+    
+    void setSalarioMensal(double salario) { this->salarioMensal = salario; }
+    double getSalarioMensal() { return salarioMensal; }
+
+    // Não há setSaldo, pois ele só é modificado por sacar() e depositar()
+    double getSaldo() { return saldo; }
+    
+    // Não há setLimite, pois ele é definido por definirLimite()
+    double getLimite() { return limite; }
+};
+
+// -------------------- Classe ContaEspecial (Classe Derivada) --------------------
+class ContaEspecial : public Conta {
+public:
+    // Construtor da ContaEspecial
+    // Usa a lista de inicialização para chamar o construtor da classe base (Conta).
+    ContaEspecial(std::string nomeCliente, int numeroConta, double salarioMensal)
+        : Conta(nomeCliente, numeroConta, salarioMensal) {
+        definirLimite(); // Chama a sua própria versão de definirLimite().
+    }
+
+    // Sobrescreve o método definirLimite para que o limite seja 3x o salário.
+    void definirLimite() override {
+        limite = salarioMensal * 3;
+    }
+};
+
+// -------------------- Função Principal --------------------
+int main() {
+    // Declara um ponteiro do tipo da interface (classe base abstrata).
+    IConta* conta;
+
+    // Variáveis para ler da entrada padrão.
+    std::string nome;
+    int numero;
+    double salario;
+    float deposito, saque;
+
+    // --- Processa uma Conta normal ---
+    std::getline(std::cin, nome);
+    std::cin >> numero;
+    std::cin >> salario;
+    std::cin >> deposito;
+    std::cin >> saque;
+    std::cin.ignore(); // Limpa o buffer de entrada para a próxima leitura de linha (getline).
+
+    // Aloca dinamicamente um objeto Conta e atribui ao ponteiro.
+    conta = new Conta(nome, numero, salario);
+    conta->depositar(deposito);
+    conta->sacar(saque);
+    
+    // Exibe os dados formatados.
+    // O cast (dynamic_cast) é necessário para acessar os métodos da classe Conta que não existem na interface IConta.
+    Conta* pConta = dynamic_cast<Conta*>(conta);
+    if (pConta) {
+        std::cout << pConta->getNomeCliente() << ", cc: " << pConta->getNumeroConta()
+                  << ", salário " << static_cast<int>(pConta->getSalarioMensal())
+                  << ", saldo total disponível: R$ " << std::fixed << std::setprecision(0)
+                  << conta->saldoTotalDisponivel() << std::endl;
+    }
+
+    // Libera a memória alocada para o objeto Conta.
+    delete conta;
+
+    // --- Processa uma ContaEspecial ---
+    std::getline(std::cin, nome);
+    std::cin >> numero;
+    std::cin >> salario;
+    std::cin >> deposito;
+    std::cin >> saque;
+    std::cin.ignore(); // Limpa o buffer de entrada.
+
+    // Reutiliza o mesmo ponteiro para alocar dinamicamente um objeto ContaEspecial.
+    // Isto demonstra o polimorfismo.
+    conta = new ContaEspecial(nome, numero, salario);
+    conta->depositar(deposito);
+    conta->sacar(saque);
+
+    // Exibe os dados formatados.
+    ContaEspecial* pContaEspecial = dynamic_cast<ContaEspecial*>(conta);
+    if (pContaEspecial) {
+        std::cout << pContaEspecial->getNomeCliente() << ", cc: " << pContaEspecial->getNumeroConta()
+                  << ", salário " << static_cast<int>(pContaEspecial->getSalarioMensal())
+                  << ", saldo total disponível: R$ " << std::fixed << std::setprecision(0)
+                  << conta->saldoTotalDisponivel() << std::endl;
+    }
+
+    // Libera a memória alocada para o objeto ContaEspecial.
+    delete conta;
+
+    return 0;
+}
