@@ -5,6 +5,6 @@ n = input()
 n = float(n)
 
 area = (n * n) * pi
-
-print('A=',area)
+area = float(area)
+print(f'A={area:.4f}')
 

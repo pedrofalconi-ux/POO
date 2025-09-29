@@ -1,9 +1,6 @@
-a = input()
-b = input()
-
-a = float(a)
-b = float(b)
+a = int(input())
+b = int(input())
 
 soma = a + b
 
-print(f'SOMA= {soma:.0f}')
+print(f'SOMA= {soma}')

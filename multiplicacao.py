@@ -1,7 +1,7 @@
-def multiplicacao(a,b)
+def multiplicacao(a,b):
     x = a * b
     return x
 
 a = int(input())
 b = int(input())
-multiplicacao(a,b)
+print(f'PROD = {multiplicacao(a,b)}')
