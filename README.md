@@ -1,4 +1,4 @@
-==== Repositório de Estudos em POO (Programação Orientada a Objetos) ====
+1. Repositório de Estudos em POO (Programação Orientada a Objetos) ====
 
 Este repositório documenta meu aprendizado e a aplicação de conceitos de Programação Orientada a Objetos (POO). Ele contém exemplos práticos e projetos desenvolvidos em diferentes linguagens para consolidar os principais pilares da POO.
 
